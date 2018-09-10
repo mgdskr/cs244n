@@ -15,7 +15,8 @@ def normalizeRows(x):
     """
 
     ### YOUR CODE HERE
-    raise NotImplementedError
+    normalizeRow = lambda row: row / np.sqrt(np.sum(row**2))
+    x = np.apply_along_axis(test_normalize_rows, 1, x)
     ### END YOUR CODE
 
     return x
