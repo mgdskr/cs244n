@@ -78,9 +78,19 @@ def minibatch_parse(sentences, model, batch_size):
     """
 
     ### YOUR CODE HERE
-    ### END YOUR CODE
+    partial_parses = [PartialParse(sentence) for sentence in sentences]
+    unfinished_parses = list(partial_parses)
+    while len(unfinished_parses):
+        batch = unfinished_parses[:batch_size]
+        predictions = model.predict(batch)
 
-    return dependencies
+        for pp, transition in zip(batch, predictions):
+            pp.parse_step(transition)
+            if len(pp.buffer) == 0 and len(pp.stack) == 1:
+                unfinished_parses.remove(pp)
+
+    ### END YOUR CODE
+    return [pp.dependencies for pp in partial_parses]
 
 
 def test_step(name, transition, stack, buf, deps,
@@ -166,4 +176,4 @@ def test_minibatch_parse():
 if __name__ == '__main__':
     test_parse_step()
     test_parse()
-    # test_minibatch_parse()
+    test_minibatch_parse()
