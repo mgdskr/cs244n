@@ -37,7 +37,7 @@ class Config:
     n_word_features = 2 # Number of features for every word in the input.
     window_size = 1 # The size of the window to use.
     ### YOUR CODE HERE
-    n_window_features = 0 # The total number of features used for each window.
+    n_window_features = n_word_features * window_size # The total number of features used for each window.
     ### END YOUR CODE
     n_classes = 5
     dropout = 0.5
@@ -59,7 +59,7 @@ class Config:
         self.conll_output = self.output_path + "window_predictions.conll"
 
 
-def make_windowed_data(data, start, end, window_size = 1):
+def make_windowed_data(data, start, end, window_size=1):
     """Uses the input sequences in @data to construct new windowed data points.
 
     TODO: In the code below, construct a window from each word in the
@@ -95,10 +95,20 @@ def make_windowed_data(data, start, end, window_size = 1):
     """
 
     windowed_data = []
-    for sentence, labels in data:
-		### YOUR CODE HERE (5-20 lines)
 
-		### END YOUR CODE
+    for sentence, labels in data:
+        # YOUR CODE HERE (5-20 lines)
+        extended_sentence = [start] * window_size
+        extended_sentence.extend(sentence)
+        extended_sentence.extend([end] * window_size)
+
+        for idx, word in enumerate(extended_sentence):
+            if idx >= window_size and idx <= (len(extended_sentence) - window_size - 1):
+                window = extended_sentence[idx - window_size: idx + window_size + 1]
+                flat_window = [item for sublist in window for item in sublist]
+
+                windowed_data.append((flat_window, labels[idx - window_size]))
+        # END YOUR CODE
     return windowed_data
 
 class WindowModel(NERModel):
