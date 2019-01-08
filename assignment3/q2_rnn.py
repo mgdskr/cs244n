@@ -101,10 +101,26 @@ def pad_sequences(data, max_length):
     zero_vector = [0] * Config.n_features
     zero_label = 4 # corresponds to the 'O' tag
 
+
     for sentence, labels in data:
         ### YOUR CODE HERE (~4-6 lines)
-        pass
+        # print(sentence)
+        sentence_length = len(sentence)
+        # print(sentence_length, max_length)
+        if sentence_length > max_length:
+            ret.append([sentence[:max_length], labels[: max_length], [True] * max_length])
+
+        elif sentence_length == max_length:
+            ret.append([sentence, labels, [True] * max_length])
+
+        elif sentence_length < max_length:
+            sentence.extend([zero_vector] * (max_length - sentence_length)),
+            labels.extend([zero_label] * (max_length - sentence_length)),
+            mask = ([True] * sentence_length)
+            mask.extend([False] * (max_length - sentence_length))
+            ret.append([sentence, labels, mask])
         ### END YOUR CODE ###
+
     return ret
 
 class RNNModel(NERModel):
